@@ -21,9 +21,6 @@ export class Router {
 
         if (matchedRoute && this.template) {
             const route = matchedRoute.route;
-            if (route.styles) {
-                await this.fetchStyles(route.styles);
-            }
             if (route.template) {
                 this.template.innerHTML = await this.fetchHTML(route.template);
             }
@@ -90,21 +87,6 @@ export class Router {
         const result = await fetch(path);
         if (!result.ok) throw new Error(`${path} loading error!`)
         return await result.text();
-    }
-
-    private async fetchStyles(path: string): Promise<void> {
-        document.querySelectorAll('link[data-router-style]').forEach(el => el.remove());
-
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = path;
-        link.setAttribute('data-router-style', '');
-        document.head.appendChild(link);
-
-        await new Promise<void>((resolve, reject) => {
-            link.onload = () => resolve();
-            link.onerror = () => reject(`${path} loading error!`)
-        })
     }
 }
 
